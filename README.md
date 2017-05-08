@@ -1,5 +1,4 @@
 # Teether
----
 Incisor segmentation project. Uses an active shape model approach to identify teeth in radiographs.
 
 ### How to run
