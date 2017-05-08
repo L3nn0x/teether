@@ -1,3 +1,6 @@
 #!/bin/python2
 
-print 'hello world'
+from src.application import Application
+
+app = Application()
+app.mainloop()
