@@ -1,3 +1,3 @@
-#!/bin/python3
+#!/bin/python2
 
-print('hello world')
+print 'hello world'
