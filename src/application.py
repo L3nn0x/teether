@@ -1,5 +1,6 @@
 import Tkinter as tk
-from PIL import Image, ImageTk
+
+from radiograph import Radiograph
 
 class Application(tk.Tk):
     def __init__(self, parent=None):
@@ -7,17 +8,12 @@ class Application(tk.Tk):
         self.parent = parent
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.original = Image.open("data/radiographs/01.tif")
-        self.image = ImageTk.PhotoImage(self.original)
-        self.display = tk.Canvas(self, bd=0, highlightthickness=0)
-        self.display.create_image(0, 0, image=self.image, anchor=tk.NW, tags="IMG")
-        self.display.grid(row=0, sticky=tk.W+tk.E+tk.N+tk.S)
         self.bind("<Configure>", self.resize)
         self.bind("<Control-c>", lambda e: self.quit())
 
+        self.radiographs = [Radiograph(self, "data/radiographs/01.tif")]
+        self.showId = 0
+        self.radiographs[self.showId].grid(row=0, sticky=tk.W+tk.E+tk.N+tk.S)
+
     def resize(self, event):
-        size = (event.width, event.height)
-        resized = self.original.resize(size, Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(resized)
-        self.display.delete("IMG")
-        self.display.create_image(0, 0, image=self.image, anchor=tk.NW, tags="IMG")
+        self.radiographs[self.showId].resize(event)
