@@ -60,6 +60,22 @@ def getLandmarks(directory, tooth):
             landmarksArray.append(landmarkVector)
     
     return np.array(landmarksArray)
+
+def getLandmarks2(directory, radiograph):
+    """
+        This function gets the landmarks for all 8 teeth for the given radiograph.
+        params:
+            directory : folder with landmarks files
+            radiograph : string identifier of radiograph
+    """
+    
+    landmarksArray = []
+    for filename in fnmatch.filter(os.listdir(directory),'landmarks'+radiograph+'-*'):
+        with open(directory+"/"+filename) as landmarkFile:
+            landmarkVector = np.array(landmarkFile.readlines(), dtype=float)
+            landmarksArray.append(landmarkVector)
+    
+    return np.array(landmarksArray)
     
 def landmarkAsMatrix(landmarkVector):
     """ This function returns the landmark vector as a matrix."""
