@@ -21,7 +21,7 @@ class Radiograph(object):
         self.image = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2GRAY)
         if hasLandmark:
             directory = "../data/landmarks/original"
-            self._teeth.append(Tooth(getLandmarks2(directory, radioID)))
+            self.teeth.append(Tooth(getLandmarks2(directory, radioID)))
 
     def cropImage(self):
         _, w = self.image.shape
