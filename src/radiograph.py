@@ -1,18 +1,28 @@
 import numpy as np
-from PIL import Image, ImageTk
-import Tkinter as tk
+import cv2
 
-class Radiograph(tk.Canvas):
-    def __init__(self, parent, filename, hasLandmark=False):
-        tk.Canvas.__init__(self, parent, bd=0, highlightthickness=0)
-        self.parent = parent
-        self.original = Image.open(filename)
-        self.image = ImageTk.PhotoImage(self.original)
-        self.create_image(0, 0, image=self.image, anchor=tk.NW, tags="IMG")
+def scharr(image):
+    """Applies scharr gradient to image"""
+    gradX = cv2.Scharr(image, cv2.CV_64F, 1, 0) / 16
+    gradY = cv2.Scharr(image, cv2.CV_64F, 0, 1) / 16
+    return np.sqrt(gradX ** 2, gradY ** 2)
 
-    def resize(self, event):
-        size = (event.width, event.height)
-        resized = self.original.resize(size, Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(resized)
-        self.delete("IMG")
-        self.create_image(0, 0, image=self.image, anchor=tk.NW, tags="IMG")
+def processImage(image, medianKernel=5, bilateralKernel=17, bilateralColor=9):
+    """filters image by using median & bilateral filters followed by scharr"""
+    image = cv2.medianBlur(image, medianKernel)
+    image = cv2.bilateralFilter(image, bilateralKernel, bilateralColor, 200)
+    return scharr(image)
+
+class Radiograph(object):
+    def __init__(self, filename, hasLandmark=False):
+        self.teeth = []
+        self.filename = filename
+        self.image = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2GRAY)
+        if hasLandmark:
+            pass # load landmarks & set teeth
+
+    def cropImage(self):
+        _, w = self.image.shape
+        left, top, right, bottom = (w/2 - 400, 500, w/2 + 400, 1400)
+        return self.image[top:bottom, left:right].copy()
+
