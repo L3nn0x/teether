@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import landmarks as lm
 
 def scharr(image):
     """Applies scharr gradient to image"""
@@ -14,12 +15,13 @@ def processImage(image, medianKernel=5, bilateralKernel=17, bilateralColor=9):
     return scharr(image)
 
 class Radiograph(object):
-    def __init__(self, filename, hasLandmark=False):
+    def __init__(self, filename, radioID, hasLandmark=False):
         self.teeth = []
         self.filename = filename
         self.image = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2GRAY)
         if hasLandmark:
-            pass # load landmarks & set teeth
+            directory = "../data/landmarks/original"
+            self._teeth.append(Tooth(getLandmarks2(directory, radioID)))
 
     def cropImage(self):
         _, w = self.image.shape
