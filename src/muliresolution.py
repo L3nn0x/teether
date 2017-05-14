@@ -12,7 +12,7 @@ class MultiResolution(object):
             self.model = IntensityModel(*model)
 
         def updateLandmarks(self, tooth):
-            return self.model.updatePositions(tooth, self.img)
+            return self.model.updatePosition(self.img, tooth)
 
     def __init__(self):
         self.resolutionLevels = []
@@ -32,7 +32,3 @@ class MultiResolution(object):
                     tooth.scale(0.5)
             img = processImage(img, *MultiResolution.filter[i])
             resolution.model.addTrainingData(img, teeth)
-
-    def train(self):
-        for resolution in self.resolutionLevels:
-            resolution.model.train()

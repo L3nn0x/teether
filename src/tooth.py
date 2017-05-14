@@ -7,6 +7,7 @@ class Tooth(object):
         self.landmarks = landmarks
         self.centroid = np.mean(self.landmarks, axis=0)
         self.normals = None
+        computeNormals()
 
     def computeNormals(self):
         nbPoints = self.landmarks.shape[0]
