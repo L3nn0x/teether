@@ -1,11 +1,16 @@
 from radiograph import Radiograph, processImage
 import cv2
 
+from activeshapemodel import ActiveShapeModel
+
 class Application(object):
     def __init__(self):
-        self.radiographs = [Radiograph("data/radiographs/01.tif", '1')]
+        self.trainninRadiographs = [Radiograph("data/radiographs/01.tif", '1')]
+        self.radiographs = []
+        #self.activeShapeModel = ActiveShapeModel(Pca(...))
 
     def run(self):
-        image = self.radiographs[0].cropImage()
-        image = processImage(image)
-        cv2.imwrite('img.jpg', image)
+        for radiograph in self.trainningRadiographs:
+            self.activeShapeModel.train(radiograph)
+        self.activeShapeModel.setup(self.radiographs[0])
+        tooth = self.activeShapeModel.run()
