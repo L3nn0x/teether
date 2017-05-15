@@ -28,7 +28,7 @@ def findPositions(center, normal, count):
 def sample(tooth, img, k, normalize=False, res=None):
     result = np.empty((tooth.landmarks.shape[0], 2 * k, k + 1))
     for i, center in enumerate(tooth.landmarks):
-        normal = tooth.normals[i]
+        normal = tooth.getNormals()[i]
         positions = findPositions(center, normal, k)
         samples = []
         for position in positions:
