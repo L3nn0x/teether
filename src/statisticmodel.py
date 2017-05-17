@@ -7,7 +7,7 @@ import numpy as np
 def create(trainingRadiographs, componentsNb=0):
     teeth = []
     for radio in trainingRadiographs:
-        teeth.append(deepcopy(i) for i in radio.teeth)
+        list(teeth.append(deepcopy(i)) for i in radio.teeth)
     mean = deepcopy(teeth[0])
     mean.translateToOrigin()
     mean.normalize()

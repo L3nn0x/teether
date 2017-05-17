@@ -11,7 +11,7 @@ class Tooth(object):
         self._normals = None
 
     def getCentroid(self):
-        if not self._centroid:
+        if self._centroid == None:
             self._centroid = self.computeCentroid()
         return self._centroid
 
@@ -83,7 +83,7 @@ class Tooth(object):
         self._centroid = None
 
     def normalize(self):
-        scale = self.landmarks - self.centroid
+        scale = self.landmarks - self.getCentroid()
         scale = np.sum(scale ** 2)
         scale = np.sqrt(scale / self.landmarks.size)
         self.scale(1 / scale)

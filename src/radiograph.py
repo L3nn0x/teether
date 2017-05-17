@@ -22,8 +22,11 @@ class Radiograph(object):
         self.filename = filename
         self.image = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2GRAY)
         if hasLandmark:
-            directory = "../data/landmarks/original"
+            directory = "data/landmarks/original"
             self.teeth.append(Tooth(lm.getLandmarks2(directory, radioID)))
+
+    def getImg(self):
+        return self.image.copy()
 
     def cropImage(self):
         _, w = self.image.shape
@@ -32,3 +35,17 @@ class Radiograph(object):
 
     def getTeeth(self):
         return deepcopy(self.teeth)
+
+    def writeImg(self, name):
+        for tooth in teeth:
+            for landmark in tooth.landmarks:
+                points = lm.landmarkAsMatrix(landmark)
+                for i in range(len(points) - 1):
+                    cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 255, 0))
+                cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 255, 0))
+        
+            points = lm.landmarkAsMatrix(lm.getMeanShape(landmarks))
+            for i in range(len(points) - 1):
+                cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 0, 0))
+            cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 0, 0))
+        cv2.imgwrite(name, self.image)

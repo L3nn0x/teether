@@ -13,3 +13,13 @@ class PCA(object):
     
     def reconstruct(self, b):
         return np.dot(b, self.eigenVectors.T) + self.mean
+
+    def limit(self, value):
+        value = min(1, max(0, value))
+        variance = self.eigenValues / sum(self.eigenValues)
+        cumulativeVariance = np.cumsum(variance)
+        i = 0
+        while i < len(self.eigenValues) - 1 and cummulativeVariance[i] < value:
+            i += 1
+        self.eigenValues = self.eigenValues[:i + 1]
+        self.eigenVectors = self.eigenVectors[:i + 1]
