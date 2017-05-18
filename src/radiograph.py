@@ -23,7 +23,14 @@ class Radiograph(object):
         self.image = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2GRAY)
         if hasLandmark:
             directory = "data/landmarks/original"
-            self.teeth.append(Tooth(lm.getLandmarks2(directory, radioID)))
+            #self.teeth.append(Tooth(lm.getLandmarks2(directory, radioID)))
+            landmarks = lm.getLandmarks2(directory, radioID)
+            landmarks2 = np.zeros((landmarks.shape[0], landmarks.shape[1]/2, 2))
+
+            for i in range(len(landmarks)):
+                landmarks2[i] = lm.landmarkAsMatrix(landmarks[i])
+                
+            self.teeth.append(Tooth(landmarks2))
 
     def getImg(self):
         return self.image.copy()
