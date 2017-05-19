@@ -14,13 +14,18 @@ def pca(landmarks, nb_components=0):
     @param nb_components:    the nb components we're interested in
     @return: return the nb_components largest eigenvalues and eigenvectors of the covariance matrix and return the average sample 
     '''
-    [n,d1,d2] = landmarks.shape
-    if (nb_components <= 0) or (nb_components>d1*d2):
-        nb_components = d1*d2
+    #[n,d1,d2] = landmarks.shape
+    #if (nb_components <= 0) or (nb_components>d1*d2):
+    #    nb_components = d1*d2
     
-    landmarks2 = np.zeros((n, d1*d2))
-    for i in range(len(landmarks)):
-        landmarks2[i] = landmarkAsVector(landmarks[i])
+    #landmarks2 = np.zeros((n, d1*d2))
+    #for i in range(len(landmarks)):
+    #    landmarks2[i] = landmarkAsVector(landmarks[i])
+    
+    landmarks2 = landmarks
+    [n, d] = landmarks2.shape
+    if (nb_components <= 0) or (nb_components > d):
+        nb_components = d
     
     mu = getMeanShape(landmarks2)
     landmarks2 -= mu    
