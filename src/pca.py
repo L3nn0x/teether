@@ -19,7 +19,7 @@ class PCA(object):
         variance = self.eigenValues / sum(self.eigenValues)
         cumulativeVariance = np.cumsum(variance)
         i = 0
-        while i < len(self.eigenValues) - 1 and cummulativeVariance[i] < value:
+        while i < len(self.eigenValues) - 1 and cumulativeVariance[i] < value:
             i += 1
         self.eigenValues = self.eigenValues[:i + 1]
         self.eigenVectors = self.eigenVectors[:i + 1]

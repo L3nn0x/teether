@@ -17,7 +17,7 @@ class MultiResolution(object):
     def __init__(self):
         self.resolutionLevels = []
         for i in range(0, MultiResolution.levelCount):
-            self.resolutionLevel.append(MultiResolution.Resolution(MultiResolution.models[i]))
+            self.resolutionLevels.append(MultiResolution.Resolution(MultiResolution.models[i]))
 
     def getLevel(self, level):
         return self.resolutionLevel[level]

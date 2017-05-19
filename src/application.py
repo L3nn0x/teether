@@ -10,7 +10,7 @@ from initialpose import findInitialTeeth
 class Application(object):
     def __init__(self):
         self.trainningRadiographs = (Radiograph("data/radiographs/{:02}.tif".format(i), str(i), True) for i in range(1, 14))
-        self.radiographs = (Radiograph("data/radiographs/extra/{}.tif".format(i), str(i)) for i in range(15, 30))
+        self.radiographs = list(Radiograph("data/radiographs/extra/{}.tif".format(i), str(i)) for i in range(15, 30))
         pca = create(self.trainningRadiographs)
         pca.limit(0.5)
         self.activeShapeModel = ActiveShapeModel(pca)

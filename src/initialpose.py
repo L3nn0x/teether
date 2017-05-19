@@ -9,7 +9,7 @@ maxAngle = 25
 sideLinesThreshold = 100
 
 def findJawLines(img):
-    Histogram = cv2.reduce(img, 1, cv2.REDUCE_SUM, dtype=cv2.CV_32S)
+    histogram = cv2.reduce(img, 1, cv2.REDUCE_SUM, dtype=cv2.CV_32S)
     threshold = 5000
     minIndex = np.argmin(histogram)
     minValue = histogram[minIndex]
@@ -101,7 +101,7 @@ def findInitialTeeth(radiograph):
     upperJaw = processImage(upperJaw, 5, 17, 6)
     lowerJaw = processImage(lowerJaw, 5, 17, 6)
 
-    upperJaw = tobinary(upperJaw)
+    upperJaw = toBinary(upperJaw)
     lowerJaw = toBinary(lowerJaw)
 
     upperLines = findHoughLines(upperJaw, 15)
