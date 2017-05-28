@@ -11,7 +11,7 @@ class Tooth(object):
         self._normals = None
 
     def getCentroid(self):
-        if self._centroid == None:
+        if self._centroid is None:
             self._centroid = self.computeCentroid()
         return self._centroid
 

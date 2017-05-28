@@ -41,7 +41,7 @@ class ActiveShapeModel(object):
 
     def run(self):
         self.currentLevel = 0
-        level = MultiResolutionFramework.levelCounts - 1
+        level = MultiResolution.levelCount - 1
         while level >= 0:
             diff = level - self.currentLevel
             self.currentLevel = level

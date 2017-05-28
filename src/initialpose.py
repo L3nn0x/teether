@@ -9,6 +9,7 @@ maxAngle = 25
 sideLinesThreshold = 100
 
 def findJawLines(img):
+    img = img[:, sideSize:img.shape[1] - sideSize]
     histogram = cv2.reduce(img, 1, cv2.REDUCE_SUM, dtype=cv2.CV_32S)
     threshold = 5000
     minIndex = np.argmin(histogram)
@@ -39,11 +40,12 @@ def toBinary(img):
     return cv2.threshold(img, 8, 255, cv2.THRESH_BINARY)[1]
 
 def findHoughLines(img, threshold):
-    return cv2.HoughLines(img, 1, 20 * np.pi / 180, threshold, 0, 0)
+    lines = cv2.HoughLines(img, rho=1, theta=20 * np.pi / 180, threshold=threshold)
+    return np.array([line[0] for line in lines])
 
 def filterLines(lines, shape, lineOffset, maxGap):
     mask = []
-    for rho, theta in lines[0]:
+    for rho, theta in lines:
         #FIXME : wtf with the times 0 ?????
         if (theta >= np.pi / 180 * 0 and theta <= np.pi / 180 * maxAngle)\
             or (theta >= np.pi / 180 * (180 - maxAngle) and theta <= np.pi / 180 * 180):
@@ -51,13 +53,13 @@ def filterLines(lines, shape, lineOffset, maxGap):
         else:
             mask.append(False)
     mask = np.array(mask)
-    lines = lines[0][mask]
+    lines = lines[~mask]
     lines = sorted(lines, key=itemgetter(0), reverse=True)
     indices = []
     oldRho = 0
     oldId = 0
     oldTheta = 0
-    for i, rho, theta in enumerate(lines):
+    for i, (rho, theta) in enumerate(lines):
         if rho < sideLinesThreshold or rho > shape[1] - sideLinesThreshold:
             continue
         elif rho < oldRho + maxGap and rho > oldRho - maxGap:
@@ -73,13 +75,13 @@ def filterLines(lines, shape, lineOffset, maxGap):
     indices.append(oldId)
     lines = np.array(lines)[indices]
 
-    for i, rho, theta in enumerate(lines):
+    for i, (rho, theta) in enumerate(lines):
         lines[i] = (rho - lineOffset, theta)
 
     middle = shape[1] / 2
     minId = 0
     minDist = float('inf')
-    for i, rho, theta in enumerate(lines):
+    for i, (rho, theta) in enumerate(lines):
         if abs(rho - middle) < minDist:
             minDist = abs(rho - middle)
             minId = i
@@ -93,7 +95,7 @@ def filterLines(lines, shape, lineOffset, maxGap):
     return np.array(sorted(lines, key=itemgetter(0)))
 
 def findInitialTeeth(radiograph):
-    img = radiograph.getImg()
+    img, _ = radiograph.cropImage()
     upperJawLine, lowerJawLine = findJawLines(img)
     upperJaw = cropJaw(img, upperJawLine, True)
     lowerJaw = cropJaw(img, lowerJawLine, False)
@@ -118,7 +120,7 @@ def findInitialTeeth(radiograph):
     rho, theta = zip(*lowerLines)
     pos.append(np.array((rho[0] - 40 + sideSize, 90 + lowerJawLine)))
     for i in range(1, 2):
-        pos.append(np.array(rho[i - 1] + (rho[i] - rho[i - 1]) / 2 + sideSize, 90 + lowerJawLine))
+        pos.append(np.array((rho[i - 1] + (rho[i] - rho[i - 1]) / 2 + sideSize, 90 + lowerJawLine)))
     pos.append(np.array((rho[2] + 40 + sideSize, 90 + lowerJawLine)))
 
     return zip(pos,
