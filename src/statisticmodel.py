@@ -4,10 +4,10 @@ from tooth import Tooth
 from copy import deepcopy
 import numpy as np
 
-def create(trainingRadiographs, componentsNb=0):
+def create(trainingRadiographs, nbTooth, componentsNb=0):
     teeth = []
     for radio in trainingRadiographs:
-        list(teeth.append(deepcopy(i)) for i in radio.teeth)
+        teeth.append(deepcopy(radio.teeth[nbTooth]))
     mean = deepcopy(teeth[0])
     mean.translateToOrigin()
     mean.normalize()

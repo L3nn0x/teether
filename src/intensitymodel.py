@@ -15,7 +15,7 @@ def findPositions(center, normal, count):
             last = sample
     scale = 0
     last = center
-    while len(neg) < sample:
+    while len(neg) < count:
         scale -= 0.5
         sample = tuple(np.floor(center + normal * scale).astype(np.int32))
         if sample != last:
@@ -26,7 +26,7 @@ def findPositions(center, normal, count):
     return neg + pos
 
 def sample(tooth, img, k, normalize=False, res=None):
-    result = np.empty((tooth.landmarks.shape[0], 2 * k, k + 1))
+    result = np.empty((tooth.landmarks.shape[0], 2 * k + 1))
     for i, center in enumerate(tooth.landmarks):
         normal = tooth.getNormals()[i]
         positions = findPositions(center, normal, k)
@@ -41,7 +41,7 @@ def sample(tooth, img, k, normalize=False, res=None):
         if normalize and not np.isclose(s, 0):
             samples /= s
         result[i] = samples
-        if res:
+        if res is not None:
             res.append(positions)
     return result
 
@@ -66,9 +66,9 @@ class IntensityModel(object):
         landmarks = []
         sampleMatrix = sample(tooth, img, self.m, self.normalize, result)
         for i, sampleProfile in enumerate(sampleMatrix):
-            pos = findPosition(sampleProfile, i)
+            pos = self.findPosition(sampleProfile, i)
             landmarks.append(result[i][pos])
-        return Tooth(np.array(landmarks))
+        return Tooth(np.array(landmarks).astype(np.float64))
 
     def findPosition(self, sampleProfile, landmarkIndex):
         sampleProfile *= self.factors

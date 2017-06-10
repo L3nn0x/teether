@@ -9,18 +9,19 @@ from initialpose import findInitialTeeth
 
 class Application(object):
     def __init__(self):
-        self.trainningRadiographs = (Radiograph("data/radiographs/{:02}.tif".format(i), str(i), True) for i in range(1, 14))
+        self.trainingRadiographs = list(Radiograph("data/radiographs/{:02}.tif".format(i), str(i), True) for i in range(1, 14))
         self.radiographs = list(Radiograph("data/radiographs/extra/{}.tif".format(i), str(i)) for i in range(15, 30))
-        pca = create(self.trainningRadiographs)
-        pca.limit(0.5)
+        pca = [create(self.trainingRadiographs, i) for i in range(8)]
+        for p in pca:
+            p.limit(0.5)
         self.activeShapeModel = ActiveShapeModel(pca)
 
     def run(self):
-        for radiograph in self.trainningRadiographs:
+        for radiograph in self.trainingRadiographs:
             self.activeShapeModel.train(radiograph)
         radiograph = self.radiographs[0]
         poses = findInitialTeeth(radiograph)
-        for pose in poses:
-            self.activeShapeModel.setup(radiograph, *pose)
+        for i, pose in enumerate(poses):
+            self.activeShapeModel.setup(radiograph, i, *pose)
             radiograph.teeth.append(self.activeShapeModel.run())
         radiograph.writeImg("radiograph0.png")

@@ -29,8 +29,8 @@ class Radiograph(object):
 
             for i in range(len(landmarks)):
                 landmarks2[i] = lm.landmarkAsMatrix(landmarks[i])
-                
-            self.teeth.append(Tooth(landmarks2))
+            for landmark in landmarks2:
+                self.teeth.append(Tooth(landmark))
 
     def getImg(self):
         return self.image.copy()
@@ -44,14 +44,15 @@ class Radiograph(object):
         return deepcopy(self.teeth)
 
     def writeImg(self, name):
-        for tooth in teeth:
+        img = self.image
+        for tooth in self.teeth:
             for landmark in tooth.landmarks:
                 points = lm.landmarkAsMatrix(landmark)
                 for i in range(len(points) - 1):
                     cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 255, 0))
                 cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 255, 0))
         
-            points = lm.landmarkAsMatrix(lm.getMeanShape(landmarks))
+            points = lm.landmarkAsMatrix(lm.getMeanShape(tooth.landmarks))
             for i in range(len(points) - 1):
                 cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 0, 0))
             cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 0, 0))

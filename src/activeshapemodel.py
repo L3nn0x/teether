@@ -14,26 +14,27 @@ class ActiveShapeModel(object):
         self.currentLevel = 0
     
     def train(self, radiograph):
-        self.multiResolution.addTrainingData(img)
+        self.multiResolution.addTrainingData(radiograph)
 
-    def setup(self, radiograph, translation=(0, 0), scale=1, rotation=0):
+    def setup(self, radiograph, nbTooth, translation=(0, 0), scale=1, rotation=0):
+        self.nbTooth = nbTooth
         self.multiResolution.setRadiograph(radiograph)
-        mean = self.pca.mean
+        mean = self.pca[nbTooth].mean
         self.meanTooth = Tooth(mean.reshape(int(mean.size / 2), 2))
         self.currentTooth = deepcopy(self.meanTooth)
         self.currentTooth.transform(translation, scale, rotation)
-        self.currentParams = np.zeros(self.pca.eigenValues.shape)
+        self.currentParams = np.zeros(self.pca[nbTooth].eigenValues.shape)
 
     def step(self):
         resolutionLevel = self.multiResolution.getLevel(self.currentLevel)
         tooth = resolutionLevel.updateLandmarks(self.currentTooth)
         translation, scale, rotation = tooth.align(self.meanTooth)
-        b = self.pca.project(tooth.landmarks.flatten())
-        maxDeviation = self.pca.getMaxDeviation()
+        b = self.pca[self.nbTooth].project(tooth.landmarks.flatten())
+        maxDeviation = self.pca[self.nbTooth].getMaxDeviation()
         for i in range(0, b.shape[0]):
-            b[i] = min(max(b[i], -maxDeviation[i]))
+            b[i] = min(max(b[i], -maxDeviation[i]), maxDeviation[i])
         scale = min(max(scale, 5), 80 / (2 ** self.currentLevel))
-        shape = self.pca.reconstruct(b)
+        shape = self.pca[self.nbTooth].reconstruct(b)
         tooth = Tooth(shape.reshape(int(shape.size / 2), 2))
         tooth.transform(translation, scale, rotation)
         self.currentParams = b
@@ -62,5 +63,5 @@ class ActiveShapeModel(object):
                 steps -= 1
             level -= 1
         res = deepcopy(self.currentTooth)
-        res.translate(-self.multiResolution.crop)
+        res.translate((-self.multiResolution.top, -self.multiResolution.left))
         return res

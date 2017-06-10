@@ -16,7 +16,7 @@ class Tooth(object):
         return self._centroid
 
     def getNormals(self):
-        if not self._normals:
+        if self._normals is None:
             self.computeNormals()
         return self._normals
 
@@ -33,10 +33,10 @@ class Tooth(object):
         for i in range(0, len(self.landmarks)):
             nLeft[i] = normal(self.landmarks[i - 1], self.landmarks[i])
             nRight[i] = normal(self.landmarks[i], self.landmarks[(i + 1) % nbPoints])
-        nLeft /= np.linalg.norm(nLeft, axis=1).reshape(40, 1)
-        nRight /= np.linalg.norm(nRight, axis=1).reshape(40, 1)
+        nLeft /= np.linalg.norm(nLeft, axis=1).reshape(nbPoints,1)
+        nRight /= np.linalg.norm(nRight, axis=1).reshape(nbPoints,1)
         self._normals = (nLeft + nRight)
-        self._normals /= np.linalg.norm(self._normals, axis=1).reshape(40, 1)
+        self._normals /= np.linalg.norm(self._normals, axis=1).reshape(nbPoints, 1)
 
     def align(self, other):
         #procrustes analysis
@@ -68,7 +68,7 @@ class Tooth(object):
         return np.sum((self.landmarks - other.landmarks) ** 2)
 
     def translate(self, translation):
-        self.landmarks += translation
+        np.add(self.landmarks, translation)
         self._centroid = None
 
     def scale(self, scale):

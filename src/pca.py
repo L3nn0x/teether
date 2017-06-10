@@ -4,6 +4,9 @@ import numpy as np
 class PCA(object):
     def __init__(self, X, numComponents=0):
         self.eigenValues, self.eigenVectors, self.mean = pca(X, numComponents)
+        self.eigenValues = np.abs(self.eigenValues.T)
+        self.eigenVectors = np.abs(self.eigenVectors.T)
+        self.mean = self.mean.T
 
     def project(self, X):
         return np.dot(X - self.mean, self.eigenVectors)
@@ -22,4 +25,4 @@ class PCA(object):
         while i < len(self.eigenValues) - 1 and cumulativeVariance[i] < value:
             i += 1
         self.eigenValues = self.eigenValues[:i + 1]
-        self.eigenVectors = self.eigenVectors[:i + 1]
+        self.eigenVectors = self.eigenVectors[:,:i + 1]
