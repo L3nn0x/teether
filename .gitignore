@@ -2,3 +2,4 @@ teether
 *.sw*
 __pycache__
 *.pyc
+*.png

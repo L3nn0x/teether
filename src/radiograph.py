@@ -46,14 +46,6 @@ class Radiograph(object):
     def writeImg(self, name):
         img = self.image
         for tooth in self.teeth:
-            for landmark in tooth.landmarks:
-                points = lm.landmarkAsMatrix(landmark)
-                for i in range(len(points) - 1):
-                    cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 255, 0))
-                cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 255, 0))
+            cv2.polylines(img, np.int32([tooth.landmarks]), 1, (255,0,0))
         
-            points = lm.landmarkAsMatrix(lm.getMeanShape(tooth.landmarks))
-            for i in range(len(points) - 1):
-                cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 0, 0))
-            cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 0, 0))
         cv2.imwrite(name, self.image)
