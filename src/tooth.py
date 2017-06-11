@@ -68,11 +68,14 @@ class Tooth(object):
         return np.sum((self.landmarks - other.landmarks) ** 2)
 
     def translate(self, translation):
-        np.add(self.landmarks, translation)
+        translation = [translation]*len(self.landmarks)
+        self.landmarks += translation
         self._centroid = None
 
     def scale(self, scale):
+        translation = self.translateToOrigin()
         self.landmarks *= scale
+        self.translate(translation)
         self._normals = None
         self._centroid = None
 
@@ -90,4 +93,6 @@ class Tooth(object):
         return scale
 
     def translateToOrigin(self):
+        translation = self.getCentroid()
         self.translate(-self.getCentroid())
+        return translation

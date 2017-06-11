@@ -29,12 +29,15 @@ class Application(object):
 
         radiograph = self.radiographs[0]
         print("finding initial poses")
-        poses = findInitialTeeth(radiograph)
+        poses = findInitialTeeth(radiograph)[:1]
         print("done")
         for i, pose in enumerate(poses):
             print("computing tooth",i)
             self.activeShapeModel.setup(radiograph, i, *pose)
-            radiograph.teeth.append(self.activeShapeModel.run())
+            def u(tooth):
+                radiograph.teeth.append(tooth)
+                radiograph.writeImg("radiograph0.png",poses)
+            radiograph.teeth.append(self.activeShapeModel.run(u))
             print("done")
         print("writing file")
         radiograph.writeImg("radiograph0.png", poses)

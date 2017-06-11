@@ -16,9 +16,7 @@ class MultiResolution(object):
             return self.model.updatePosition(self.img, tooth)
 
     def __init__(self):
-        self.resolutionLevels = []
-        for i in range(0, MultiResolution.levelCount):
-            self.resolutionLevels.append(MultiResolution.Resolution(MultiResolution.models[i]))
+        self.resolutionLevels = [MultiResolution.Resolution(i) for i in MultiResolution.models]
 
     def getLevel(self, level):
         return self.resolutionLevels[level]
@@ -35,7 +33,7 @@ class MultiResolution(object):
                 for tooth in teeth:
                     tooth.scale(0.5)
             img2 = processImage(img.copy(), *MultiResolution.filter[i])
-            resolution.model.addTrainingData(teeth, img)
+            resolution.model.addTrainingData(teeth, img2)
 
     def setRadiograph(self, radiograph):
         img, (self.left, self.top, _, _) = radiograph.cropImage()

@@ -43,7 +43,7 @@ def pca(landmarks, nb_components=0):
     mu = getMeanShape(landmarks2)
     landmarks2 -= mu
 
-    cov_mat = np.cov(landmarks2)
+    cov_mat = np.cov(landmarks2.transpose())
     eig_val, eig_vec = np.linalg.eig(cov_mat)
 
     eig = [list(x) for x in zip(eig_val, eig_vec.transpose())]
@@ -55,7 +55,7 @@ def pca(landmarks, nb_components=0):
     eig_vec = np.array(eig_vec)
     eig_vec = eig_vec.transpose()
 
-    eig_vec = landmarks2.transpose().dot(eig_vec)
+    eig_vec = landmarks2.dot(eig_vec)
     for i in eig_vec.transpose():
         i/=np.linalg.norm(i)
 

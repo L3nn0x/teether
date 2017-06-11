@@ -25,7 +25,7 @@ class ActiveShapeModel(object):
         self.currentTooth.transform(translation, scale, rotation)
         self.currentParams = np.zeros(self.pca[nbTooth].eigenValues.shape)
 
-    def step(self):
+    def step(self, write):
         resolutionLevel = self.multiResolution.getLevel(self.currentLevel)
         tooth = resolutionLevel.updateLandmarks(self.currentTooth)
         translation, scale, rotation = tooth.align(self.meanTooth)
@@ -40,7 +40,7 @@ class ActiveShapeModel(object):
         self.currentParams = b
         self.currentTooth = tooth
 
-    def run(self):
+    def run(self, write):
         self.currentLevel = 0
         level = MultiResolution.levelCount - 1
         while level >= 0:
@@ -55,7 +55,7 @@ class ActiveShapeModel(object):
             steps = ActiveShapeModel.maxStepsPerLevel
             while steps > 0:
                 previousTooth = self.currentTooth
-                self.step()
+                self.step(write)
                 diff = self.currentTooth.diff(previousTooth)
                 if diff < 1:
                     self.currentTooth = previousTooth
@@ -63,5 +63,5 @@ class ActiveShapeModel(object):
                 steps -= 1
             level -= 1
         res = deepcopy(self.currentTooth)
-        res.translate((-self.multiResolution.top, -self.multiResolution.left))
+        #res.translate((-self.multiResolution.top, -self.multiResolution.left))
         return res
