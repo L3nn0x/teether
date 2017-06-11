@@ -6,6 +6,19 @@ import csv
 import math
 import matplotlib.pyplot as plt
 
+def project(W, X, mu):
+    '''
+    Project X on the space spanned by the vectors in W.
+    mu is the average image.
+    '''
+    return W.transpose().dot(X - mu)
+
+def reconstruct(W, Y, mu):
+    '''
+    Reconstruct an image based on its PCA-coefficients Y, the eigenvectors W and the average mu.
+    '''
+    return W.dot(Y) + mu
+
 def pca(landmarks, nb_components=0):
     '''
     Do a PCA analysis on landmarks
@@ -30,7 +43,7 @@ def pca(landmarks, nb_components=0):
     mu = getMeanShape(landmarks2)
     landmarks2 -= mu
 
-    cov_mat = np.cov(landmarks2.transpose())
+    cov_mat = np.cov(landmarks2)
     eig_val, eig_vec = np.linalg.eig(cov_mat)
 
     eig = [list(x) for x in zip(eig_val, eig_vec.transpose())]
@@ -42,8 +55,7 @@ def pca(landmarks, nb_components=0):
     eig_vec = np.array(eig_vec)
     eig_vec = eig_vec.transpose()
 
-    eig_vec = landmarks2.dot(eig_vec)
-
+    eig_vec = landmarks2.transpose().dot(eig_vec)
     for i in eig_vec.transpose():
         i/=np.linalg.norm(i)
 
@@ -96,6 +108,16 @@ def translateToOrigin(points):
 
     return points - sum(points) / points.shape[0]
 
+def translate(points, center_point):
+    """ This function translates the points that are in matrix notation so their center of gravity is the center point."""
+
+    return translateToOrigin(points) + center_point
+
+def translate2(points, center_point):
+    """ This function translates the points that are in vector notation so their center of gravity is the center point."""
+
+    return landmarkAsVector(translateToOrigin(landmarkAsMatrix(points)) + center_point)
+
 def scaleTo1(points):
     """ This function scales the points that are assumed to be already centered around the origin."""
 
@@ -115,10 +137,7 @@ def getScalingFactor(points, template):
 
 def scale(points, scalingFactor):
     """ This function rescale the points by the scaling factor. """
-
-    points = (points).dot(scalingFactor)
-
-    return points
+    return points.dot(scalingFactor)
 
 def getRotationAngle(template, points):
     """ This function returns the angle of rotation that best matches the points against the template. """
@@ -166,14 +185,18 @@ def getMeanShape(alignedShapes):
     """ This function returns the mean shape of aligned shapes."""
 
     return alignedShapes.mean(axis=0)
-
 def visualizeLandmark(points, img):
         """ This function visualizes the landmark points that are in matrix notation. """
 
-        img = np.zeros(img.shape)
+        max_y = points[:, 0].max()
+        min_y = points[:, 0].min()
+        max_x = points[:, 1].max()
+        min_x = points[:, 1].min()
+
+        img = np.zeros((int((max_x - min_x) + 30), int((max_y - min_y) + 30)))
 
         for i in range(len(points)):
-            img[int(points[i, 1]), int(points[i, 0])] = 1
+            img[int(points[i, 1] - min_x + 15), int(points[i, 0] - min_y + 15)] = 1
 
         cv2.imshow('Rendered shape', img)
         cv2.waitKey(0)
@@ -181,9 +204,7 @@ def visualizeLandmark(points, img):
 def visualizeLandmarkOnRadiograph(points, img):
         """ This function visualizes the landmark points that are in matrix notation on the radiograph."""
 
-        for i in range(len(points) - 1):
-            cv2.line(img, (int(points[i, 0]), int(points[i, 1])), (int(points[i+1, 0]), int(points[i+1, 1])), (255, 255, 0))
-        cv2.line(img, (int(points[0, 0]), int(points[0, 1])), (int(points[len(points) - 1, 0]), int(points[len(points) - 1, 1])), (255, 255, 0))
+        cv2.polylines(img, np.int32([points]), 1, (255,255,0))
 
         cv2.imshow('Rendered shape', img)
         cv2.waitKey(0)
@@ -206,6 +227,14 @@ def visualizeLandmarksOnRadiograph(landmarks, img):
         cv2.imshow('Rendered shape', img)
         cv2.waitKey(0)
 
+def visualizeLandmarksOnRadiograph2(landmarks, img):
+        """ This function visualizes the landmarks points that are in matrix notation on the radiograph."""
+
+        for points in landmarks:
+            cv2.polylines(img, np.int32([points]), 1, (255,255,0))
+        cv2.imshow('Rendered shape', img)
+        cv2.waitKey(0)
+
 def GPA2(landmarks):
     """ This function performs the generalized procrustes analysis on the landmarks. """
 
@@ -215,6 +244,9 @@ def GPA2(landmarks):
     for i in range(len(landmarks)):
         landmarks2[i] = translateToOrigin(landmarkAsMatrix(landmarks[i]))
 
+    #
+    temp = np.linalg.norm(landmarks2[0])
+    temp2 = landmarkAsMatrix(getMeanShape(landmarks))
     # initial estimate of the mean
     meanShape = getMeanShape(landmarks2)
 
@@ -244,7 +276,9 @@ def GPA2(landmarks):
             break
 
         meanShape = meanShape2
-
+    #
+    for i in range(len(landmarks2)):
+        landmarks2[i] = translate(scale(landmarks2[i],temp),temp2)
     return meanShape, landmarks2
 
 if __name__ == '__main__':
@@ -255,3 +289,6 @@ if __name__ == '__main__':
     #visualizeLandmark(gpa[0]*500+800, plt.imread("Data/Radiographs/01.tif"))
     #visualizeLandmarksOnRadiograph(getLandmarks(directory, '1'), plt.imread("Data/Radiographs/01.tif"))
     [eigenvalues, eigenvectors, mu] = pca(gpa[1], 8)
+    Y = project(eigenvectors, landmarkAsVector(gpa[1][0]), mu )
+    X = reconstruct(eigenvectors, Y, mu)
+    visualizeLandmark(landmarkAsMatrix(X))
