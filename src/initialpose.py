@@ -40,32 +40,27 @@ def toBinary(img):
     return cv2.threshold(img, 8, 255, cv2.THRESH_BINARY)[1]
 
 def findHoughLines(img, threshold):
-    lines = cv2.HoughLines(img, rho=1, theta=20 * np.pi / 180, threshold=threshold)
-    return np.array([line[0] for line in lines])
+    return [i[0] for i in cv2.HoughLines(img, rho=1, theta=20*np.pi / 180, threshold=threshold)]
 
-def filterLines(lines, shape, lineOffset, maxGap):
-    mask = []
+def filterLines(lines, shape, offset, maxGap):
+    toConsider = []
+    from math import radians
     for rho, theta in lines:
-        #FIXME : wtf with the times 0 ?????
-        if (theta >= np.pi / 180 * 0 and theta <= np.pi / 180 * maxAngle)\
-            or (theta >= np.pi / 180 * (180 - maxAngle) and theta <= np.pi / 180 * 180):
-            mask.append(True)
-        else:
-            mask.append(False)
-    mask = np.array(mask)
-    lines = lines[~mask]
-    lines = sorted(lines, key=itemgetter(0), reverse=True)
+        if (theta >= 0 and theta <= radians(maxAngle))\
+           or (theta >= radians(180 - maxAngle) and theta <= radians(180)):
+            toConsider.append((rho,theta))
+    toConsider = sorted(toConsider, key=itemgetter(0))
     indices = []
     oldRho = 0
-    oldId = 0
     oldTheta = 0
-    for i, (rho, theta) in enumerate(lines):
+    oldId = 0
+    for i, (rho, theta) in enumerate(toConsider):
         if rho < sideLinesThreshold or rho > shape[1] - sideLinesThreshold:
             continue
         elif rho < oldRho + maxGap and rho > oldRho - maxGap:
             if theta < oldTheta:
                 oldId = i
-                oldTheta = theta
+                ildTheta = theta
         else:
             indices.append(oldId)
             oldRho = rho
@@ -73,31 +68,40 @@ def filterLines(lines, shape, lineOffset, maxGap):
             oldId = i
     indices.pop(0)
     indices.append(oldId)
-    lines = np.array(lines)[indices]
-
-    for i, (rho, theta) in enumerate(lines):
-        lines[i] = (rho - lineOffset, theta)
-
+    toConsider = np.array(toConsider)[indices]
+    for i, (rho,theta) in enumerate(toConsider):
+        toConsider[i] = (rho - offset, theta)
     middle = shape[1] / 2
     minId = 0
     minDist = float('inf')
-    for i, (rho, theta) in enumerate(lines):
+    for i, (rho,theta) in enumerate(toConsider):
         if abs(rho - middle) < minDist:
             minDist = abs(rho - middle)
             minId = i
-    nLines = lines[minId - 1:minId + 2]
-
-    if nLines.shape[0] != 3:
-        rho, theta = lines[minId]
-        lines = [(rho + maxGap, 0), (rho, theta), (rho - maxGap, 0)]
+    new = toConsider[minId - 1:minId + 2]
+    if new.shape[0] != 3:
+        rho, theta = toConsider[minId]
+        lines = [(rho+maxGap,0),(rho,theta),(rho-maxGap,0)]
     else:
-        lines = nLines
+        lines = new
     return np.array(sorted(lines, key=itemgetter(0)))
 
+def printRhoTheta(img, rho, theta):
+    a = np.cos(theta)
+    b = np.sin(theta)
+    x0 = a*rho
+    y0 = b*rho
+    x1 = int(x0+1000*(-b))
+    y1 = int(y0+1000*a)
+    x2 = int(x0-1000*(-b))
+    y2 = int(y0-1000*a)
+    cv2.line(img, (x1,y1),(x2,y2),(255,0,0))
+
 def findInitialTeeth(radiograph):
-    img, _ = radiograph.cropImage()
+    img, (left, top, _, _) = radiograph.cropImage()
     upperJawLine, lowerJawLine = findJawLines(img)
     upperJaw = cropJaw(img, upperJawLine, True)
+    tmp = upperJaw.copy()
     lowerJaw = cropJaw(img, lowerJawLine, False)
 
     upperJaw = processImage(upperJaw, 5, 17, 6)
@@ -110,19 +114,19 @@ def findInitialTeeth(radiograph):
     lowerLines = findHoughLines(lowerJaw, 15)
 
     upperLines = filterLines(upperLines, upperJaw.shape, 6, 90)
-    lowerLines = filterLines(lowerLines, lowerJaw.shape, 2, 90)
+    lowerLines = filterLines(lowerLines, lowerJaw.shape, 6, 90)
 
-    rho, theta = zip(*upperLines)
-    pos = [np.array((rho[0] - 35 + sideSize, 50 + upperJawLine - upperJawSize))]
-    for i in range(1, 2):
-        pos.append(np.array((rho[i - 1] + (rho[i] - rho[i - 1]) / 2 + sideSize, 80 + upperJawLine - upperJawSize)))
-    pos.append(np.array((rho[2] + 35 + sideSize, 50 + upperJawLine - upperJawSize)))
-    rho, theta = zip(*lowerLines)
-    pos.append(np.array((rho[0] - 40 + sideSize, 90 + lowerJawLine)))
-    for i in range(1, 2):
-        pos.append(np.array((rho[i - 1] + (rho[i] - rho[i - 1]) / 2 + sideSize, 90 + lowerJawLine)))
-    pos.append(np.array((rho[2] + 40 + sideSize, 90 + lowerJawLine)))
+    rho,theta = zip(*upperLines)
+    pos = [np.array((left+rho[0]-35+sideSize,top+110+upperJawLine-upperJawSize))]
+    for i in range(1,3):
+        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+130+upperJawLine-upperJawSize)))
+    pos.append(np.array((left+rho[2]+25+sideSize,top+110+upperJawLine-upperJawSize)))
+    rho,theta = zip(*lowerLines)
+    pos.append(np.array((left+rho[0]-40+sideSize,top+50+lowerJawLine)))
+    for i in range(1,3):
+        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+50+lowerJawLine)))
+    pos.append(np.array((left+rho[2]+40+sideSize,top+50+lowerJawLine)))
 
     return zip(pos,
             (48, 55, 55, 48, 40, 38, 38, 40),
-            (0.05, 0.2, 0.2, 0.3, 0, -0.05, -0.1, -0.15))[:8]
+            (0.05, 0.2, 0.2, 0.3, 0, -0.05, -0.1, -0.15))

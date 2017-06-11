@@ -12,7 +12,7 @@ class ActiveShapeModel(object):
         self.pca = pca
         self.multiResolution = MultiResolution()
         self.currentLevel = 0
-    
+
     def train(self, radiograph):
         self.multiResolution.addTrainingData(radiograph)
 

@@ -5,14 +5,15 @@ from copy import deepcopy
 import numpy as np
 
 def create(trainingRadiographs, nbTooth, componentsNb=0):
+    print("GPA & PCA analysis for tooth", nbTooth)
     teeth = []
     for radio in trainingRadiographs:
         teeth.append(deepcopy(radio.teeth[nbTooth]))
+        teeth[-1].translateToOrigin()
+        teeth[-1].normalize()
     mean = deepcopy(teeth[0])
-    mean.translateToOrigin()
-    mean.normalize()
     error = float('inf')
-    while error > 0.05:
+    while error > 0.000001:
         meanAcc = np.zeros(mean.landmarks.shape)
         for tooth in teeth:
             tooth.align(mean)

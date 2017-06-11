@@ -13,7 +13,7 @@ class PCA(object):
 
     def getMaxDeviation(self):
         return 2 * np.sqrt(self.eigenValues)
-    
+
     def reconstruct(self, b):
         return np.dot(b, self.eigenVectors.T) + self.mean
 

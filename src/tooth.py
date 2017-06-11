@@ -60,7 +60,7 @@ class Tooth(object):
 
     def upSample(self):
         self.scale(2)
-    
+
     def downSample(self):
         self.scale(0.5)
 
