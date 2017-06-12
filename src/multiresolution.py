@@ -42,4 +42,3 @@ class MultiResolution(object):
                 img = cv2.pyrDown(img)
             filtered = processImage(img.copy(), *MultiResolution.filter[i])
             self.resolutionLevels[i].img = filtered
-            self.resolutionLevels[i].radiograph = radiograph
