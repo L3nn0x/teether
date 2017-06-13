@@ -21,8 +21,7 @@ def findPositions(center, normal, count):
         if sample != last:
             neg.append(sample)
             last = sample
-    neg.reverse()
-    return neg + [center] + pos
+    return list(reversed(neg)) + [center] + pos
 
 def sample(tooth, img, k, normalize=False, res=None):
     result = np.empty((tooth.landmarks.shape[0], 2 * k + 1))
@@ -59,7 +58,6 @@ class IntensityModel(object):
     def addTrainingData(self, teeth, img):
         for i, tooth in enumerate(teeth):
             self.samples.append(sample(tooth, img, self.k, self.normalize))
-        print(self.samples)
 
     def updatePosition(self, img, tooth):
         result = []
@@ -68,7 +66,7 @@ class IntensityModel(object):
         for i, sampleProfile in enumerate(sampleMatrix):
             pos = self.findPosition(sampleProfile, i)
             landmarks.append(result[i][pos])
-        return Tooth(np.array(landmarks).astype(np.float64))
+        return Tooth(np.array(landmarks))
 
     def findPosition(self, sampleProfile, landmarkIndex):
         sampleProfile *= self.factors

@@ -25,7 +25,7 @@ class MultiResolution(object):
         img, (left, top, _, _) = radiograph.cropImage()
         teeth = radiograph.getTeeth()
         for tooth in teeth:
-            tooth.translate((-top, -left))
+            tooth.translate((-left, -top))
         for i in range(0, MultiResolution.levelCount):
             resolution = self.resolutionLevels[i]
             teethCopy = teeth[:]
