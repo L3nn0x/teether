@@ -15,7 +15,7 @@ class Application(object):
         print("loading {} test radiographs".format(30-15))
         self.radiographs = list(Radiograph("data/radiographs/extra/{}.tif".format(i), str(i)) for i in range(15, 30))
         print("done")
-        pca = [create(self.trainingRadiographs, i) for i in range(8)]
+        pca = [create(self.trainingRadiographs, i, 6) for i in range(8)]
         print("done")
         for p in pca:
             p.limit(0.5)

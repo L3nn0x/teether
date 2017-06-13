@@ -4,12 +4,12 @@ import numpy as np
 class PCA(object):
     def __init__(self, X, numComponents=0):
         self.eigenValues, self.eigenVectors, self.mean = pca(X, numComponents)
-        self.eigenValues = np.abs(self.eigenValues.T)
-        self.eigenVectors = np.abs(self.eigenVectors.T)
-        self.mean = self.mean.T
+        #self.eigenValues = np.abs(self.eigenValues.T)
+        #self.eigenVectors = np.abs(self.eigenVectors.T)
+        #self.mean = self.mean.T
 
     def project(self, X):
-        return np.dot(X - self.mean, self.eigenVectors)
+        return self.eigenVectors.dot(X-self.mean)
 
     def getMaxDeviation(self):
         return 2 * np.sqrt(self.eigenValues)
