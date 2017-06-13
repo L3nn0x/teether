@@ -45,13 +45,14 @@ class ActiveShapeModel(object):
         level = MultiResolution.levelCount - 1
         while level >= 0:
             diff = level - self.currentLevel
-            self.currentLevel = level
+            if diff != 0:
+                self.currentLevel = level
             if diff < 0:
                 for i in range(0, abs(diff)):
                     self.currentTooth.upSample()
             elif diff > 0:
                 for i in range(0, abs(diff)):
-                    self.currentTooth.downSample()
+                     self.currentTooth.downSample()
             steps = ActiveShapeModel.maxStepsPerLevel
             while steps > 0:
                 previousTooth = self.currentTooth

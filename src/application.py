@@ -27,7 +27,7 @@ class Application(object):
 
         radiograph = self.radiographs[0]
         print("finding initial poses")
-        poses = findInitialTeeth(radiograph)[:1]
+        poses = findInitialTeeth(radiograph)
         print("done")
         for i, pose in enumerate(poses):
             print("computing tooth",i)

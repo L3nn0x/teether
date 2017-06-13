@@ -60,5 +60,5 @@ class Radiograph(object):
         for (point, _, _) in poses:
             point = tuple(*np.int32([point]))
             cv2.circle(img, point, 10, (255,255,0), -1)
-        cv2.imshow(img)
-        cv2.getkey()
+        cv2.imshow('image', img)
+        cv2.waitKey(0)
