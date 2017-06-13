@@ -10,7 +10,7 @@ sideLinesThreshold = 100
 
 def findJawLines(img):
     img = img[:, sideSize:img.shape[1] - sideSize]
-    histogram = cv2.reduce(img, 1, cv2.REDUCE_SUM, dtype=cv2.CV_32S)
+    histogram = cv2.reduce(img, 1, cv2.cv.REDUCE_SUM, dtype=cv2.CV_32S)
     threshold = 5000
     minIndex = np.argmin(histogram)
     minValue = histogram[minIndex]
@@ -66,7 +66,8 @@ def filterLines(lines, shape, offset, maxGap):
             oldRho = rho
             oldTheta = theta
             oldId = i
-    indices.pop(0)
+    if len(indices):
+        indices.pop(0)
     indices.append(oldId)
     toConsider = np.array(toConsider)[indices]
     for i, (rho,theta) in enumerate(toConsider):
