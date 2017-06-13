@@ -44,7 +44,7 @@ class Radiograph(object):
         return deepcopy(self.teeth)
 
     def writeImg(self, name, poses):
-        img = self.image
+        img = self.image.copy()
         for tooth in self.teeth:
             cv2.polylines(img, np.int32([tooth.landmarks]), 1, (255,0,0))
         for (point, _, _) in poses:
@@ -52,3 +52,13 @@ class Radiograph(object):
             cv2.circle(img, point, 10, (255,255,0), -1)
 
         cv2.imwrite(name, img)
+
+    def showImg(self, poses):
+        img = self.image.copy()
+        for tooth in self.teeth:
+            cv2.polylines(img, np.int32([tooth.landmarks]), 1, (255,0,0))
+        for (point, _, _) in poses:
+            point = tuple(*np.int32([point]))
+            cv2.circle(img, point, 10, (255,255,0), -1)
+        cv2.imshow(img)
+        cv2.getkey()
