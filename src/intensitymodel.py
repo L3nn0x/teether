@@ -66,7 +66,7 @@ class IntensityModel(object):
         for i, sampleProfile in enumerate(sampleMatrix):
             pos = self.findPosition(sampleProfile, i)
             landmarks.append(result[i][pos])
-        return Tooth(np.array(landmarks))
+        return Tooth(np.array(landmarks).astype(np.float32))
 
     def findPosition(self, sampleProfile, landmarkIndex):
         sampleProfile *= self.factors
