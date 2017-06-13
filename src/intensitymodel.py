@@ -59,6 +59,7 @@ class IntensityModel(object):
     def addTrainingData(self, teeth, img):
         for i, tooth in enumerate(teeth):
             self.samples.append(sample(tooth, img, self.k, self.normalize))
+        print(self.samples)
 
     def updatePosition(self, img, tooth):
         result = []
