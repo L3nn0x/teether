@@ -10,7 +10,7 @@ sideLinesThreshold = 100
 
 def findJawLines(img):
     img = img[:, sideSize:img.shape[1] - sideSize]
-    histogram = cv2.reduce(img, 1, cv2.cv.REDUCE_SUM, dtype=cv2.CV_32S)
+    histogram = cv2.reduce(img, 1, cv2.cv.CV_REDUCE_SUM, dtype=cv2.CV_32S)
     threshold = 5000
     minIndex = np.argmin(histogram)
     minValue = histogram[minIndex]
