@@ -17,8 +17,6 @@ class Application(object):
         print("done")
         pca = [create(self.trainingRadiographs, i, 6) for i in range(8)]
         print("done")
-        for p in pca:
-            p.limit(0.5)
         self.activeShapeModel = ActiveShapeModel(pca)
 
     def run(self):

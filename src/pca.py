@@ -4,9 +4,9 @@ import numpy as np
 class PCA(object):
     def __init__(self, X, numComponents=0):
         self.eigenValues, self.eigenVectors, self.mean = pca(X, numComponents)
-        #self.eigenValues = np.abs(self.eigenValues.T)
-        #self.eigenVectors = np.abs(self.eigenVectors.T)
-        #self.mean = self.mean.T
+        self.eigenValues = self.eigenValues.T
+        self.eigenVectors = self.eigenVectors.T
+        self.mean = self.mean.T
 
     def project(self, X):
         return self.eigenVectors.dot(X-self.mean)
@@ -15,7 +15,7 @@ class PCA(object):
         return 2 * np.sqrt(self.eigenValues)
 
     def reconstruct(self, b):
-        return np.dot(b, self.eigenVectors.T) + self.mean
+        return np.dot(b, self.eigenVectors) + self.mean
 
     def limit(self, value):
         value = min(1, max(0, value))
