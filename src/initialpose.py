@@ -60,7 +60,7 @@ def filterLines(lines, shape, offset, maxGap):
         elif rho < oldRho + maxGap and rho > oldRho - maxGap:
             if theta < oldTheta:
                 oldId = i
-                ildTheta = theta
+                oldTheta = theta
         else:
             indices.append(oldId)
             oldRho = rho
