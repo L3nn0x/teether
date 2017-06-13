@@ -28,12 +28,13 @@ class MultiResolution(object):
             tooth.translate((-top, -left))
         for i in range(0, MultiResolution.levelCount):
             resolution = self.resolutionLevels[i]
+            teethCopy = teeth[:]
             if i > 0:
                 img = cv2.pyrDown(img)
-                for tooth in teeth:
-                    tooth.scale(0.5)
+                for tooth in teethCopy:
+                    tooth.downSample()
             img2 = processImage(img.copy(), *MultiResolution.filter[i])
-            resolution.model.addTrainingData(teeth, img2)
+            resolution.model.addTrainingData(teethCopy, img2)
 
     def setRadiograph(self, radiograph):
         img, (self.left, self.top, _, _) = radiograph.cropImage()

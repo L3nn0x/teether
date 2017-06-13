@@ -22,8 +22,7 @@ def findPositions(center, normal, count):
             neg.append(sample)
             last = sample
     neg.reverse()
-    neg.append(center)
-    return neg + pos
+    return neg + [center] + pos
 
 def sample(tooth, img, k, normalize=False, res=None):
     result = np.empty((tooth.landmarks.shape[0], 2 * k + 1))
