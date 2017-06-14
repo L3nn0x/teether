@@ -23,6 +23,7 @@ class ActiveShapeModel(object):
         self.meanTooth = Tooth(mean.reshape(int(mean.size / 2), 2))
         self.currentTooth = deepcopy(self.meanTooth)
         self.currentTooth.transform(translation, scale, rotation)
+        self.newTooth = deepcopy(self.currentTooth)
         self.currentParams = np.zeros(self.pca[nbTooth].eigenValues.shape)
 
     def step(self, write):
@@ -65,5 +66,6 @@ class ActiveShapeModel(object):
         res = deepcopy(self.currentTooth)
         res.upSample()
         res.upSample()
+        res.align(self.newTooth)
 #        res.translate((self.multiResolution.left, self.multiResolution.top))
         return res
