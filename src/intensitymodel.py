@@ -1,5 +1,6 @@
 import numpy as np
 from tooth import Tooth
+from copy import deepcopy
 
 def findPositions(center, normal, count):
     pos = []
@@ -57,6 +58,7 @@ class IntensityModel(object):
 
     def addTrainingData(self, teeth, img):
         for i, tooth in enumerate(teeth):
+            tooth = deepcopy(tooth)
             self.samples.append(sample(tooth, img, self.k, self.normalize))
 
     def updatePosition(self, img, tooth):
