@@ -17,7 +17,6 @@ class ActiveShapeModel(object):
         self.multiResolution.addTrainingData(radiograph)
 
     def setup(self, radiograph, nbTooth, translation=(0, 0), scale=1, rotation=0):
-        self.transformation = (translation, scale, rotation)
         self.nbTooth = nbTooth
         self.multiResolution.setRadiograph(radiograph)
         mean = self.pca[nbTooth].mean
@@ -66,6 +65,5 @@ class ActiveShapeModel(object):
         res = deepcopy(self.currentTooth)
         res.upSample()
         res.upSample()
-        res.translate(self.transformation[0])
 #        res.translate((self.multiResolution.left, self.multiResolution.top))
         return res
