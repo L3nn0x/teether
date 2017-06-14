@@ -35,7 +35,7 @@ def sample(tooth, img, k, normalize=False, res=None):
                 samples.append(0)
             else:
                 samples.append(img[position[1], position[0]])
-        samples = np.array(samples)
+        samples = np.array(samples).astype(np.float64)
         s = np.sum(np.abs(samples))
         if normalize and not np.isclose(s, 0):
             samples /= s
