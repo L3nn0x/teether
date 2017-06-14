@@ -99,7 +99,7 @@ def printRhoTheta(img, rho, theta):
     cv2.line(img, (x1,y1),(x2,y2),(255,0,0))
 
 def findInitialTeeth(radiograph):
-    img = radiograph.getImage()
+    img = radiograph.getImg()
     upperJawLine, lowerJawLine = findJawLines(img)
     upperJaw = cropJaw(img, upperJawLine, True)
     lowerJaw = cropJaw(img, lowerJawLine, False)
