@@ -40,12 +40,12 @@ def toBinary(img):
     return cv2.threshold(img, 8, 255, cv2.THRESH_BINARY)[1]
 
 def findHoughLines(img, threshold):
-    return [i[0] for i in cv2.HoughLines(img, rho=1, theta=20*np.pi / 180, threshold=threshold)]
+    return cv2.HoughLines(img, 1, 20*np.pi/180, threshold, 0, 0)#[i[0] for i in cv2.HoughLines(img, rho=1, theta=20*np.pi / 180, threshold=threshold)]
 
 def filterLines(lines, shape, offset, maxGap):
     toConsider = []
     from math import radians
-    for rho, theta in lines:
+    for rho, theta in lines[0]:
         if (theta >= 0 and theta <= radians(maxAngle))\
            or (theta >= radians(180 - maxAngle) and theta <= radians(180)):
             toConsider.append((rho,theta))
