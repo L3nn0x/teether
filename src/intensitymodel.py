@@ -5,9 +5,9 @@ from copy import deepcopy
 def findPositions(center, normal, count):
     pos = []
     neg = []
-    center = tuple(center.astype(np.int32))
+    centerTup = tuple(center.astype(np.int32))
     scale = 0
-    last = center
+    last = centerTup
     while len(pos) < count:
         scale += 0.5
         sample = tuple(np.floor(center + normal * scale).astype(np.int32))
@@ -15,7 +15,7 @@ def findPositions(center, normal, count):
             pos.append(sample)
             last = sample
     scale = 0
-    last = center
+    last = centerTup
     while len(neg) < count:
         scale -= 0.5
         sample = tuple(np.floor(center + normal * scale).astype(np.int32))
