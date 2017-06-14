@@ -99,10 +99,9 @@ def printRhoTheta(img, rho, theta):
     cv2.line(img, (x1,y1),(x2,y2),(255,0,0))
 
 def findInitialTeeth(radiograph):
-    img, (left, top, _, _) = radiograph.cropImage()
+    img = radiograph.getImage()
     upperJawLine, lowerJawLine = findJawLines(img)
     upperJaw = cropJaw(img, upperJawLine, True)
-    tmp = upperJaw.copy()
     lowerJaw = cropJaw(img, lowerJawLine, False)
 
     upperJaw = processImage(upperJaw, 5, 17, 6)
@@ -118,15 +117,15 @@ def findInitialTeeth(radiograph):
     lowerLines = filterLines(lowerLines, lowerJaw.shape, 6, 90)
 
     rho,theta = zip(*upperLines)
-    pos = [np.array((left+rho[0]-35+sideSize,top+50+upperJawLine-upperJawSize))]
+    pos = [np.array((rho[0]-35+sideSize,50+upperJawLine-upperJawSize))]
     for i in range(1,3):
-        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+80+upperJawLine-upperJawSize)))
-    pos.append(np.array((left+rho[2]+25+sideSize,top+80+upperJawLine-upperJawSize)))
+        pos.append(np.array((rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,80+upperJawLine-upperJawSize)))
+    pos.append(np.array((rho[2]+25+sideSize,80+upperJawLine-upperJawSize)))
     rho,theta = zip(*lowerLines)
-    pos.append(np.array((left+rho[0]-40+sideSize,top+50+lowerJawLine)))
+    pos.append(np.array((rho[0]-40+sideSize,50+lowerJawLine)))
     for i in range(1,3):
-        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+90+lowerJawLine)))
-    pos.append(np.array((left+rho[2]+sideSize,top+90+lowerJawLine)))
+        pos.append(np.array((rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,90+lowerJawLine)))
+    pos.append(np.array((rho[2]+sideSize,90+lowerJawLine)))
 
     return zip(pos,
             (48, 55, 55, 48, 40, 38, 38, 40),
