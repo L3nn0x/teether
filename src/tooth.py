@@ -72,9 +72,9 @@ class Tooth(object):
         self._centroid = None
 
     def scale(self, scale):
-        translation = self.translateToOrigin()
+        #translation = self.translateToOrigin()
         self.landmarks *= scale
-        self.translate(translation)
+        #self.translate(translation)
         self._normals = None
         self._centroid = None
 

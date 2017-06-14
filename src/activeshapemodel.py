@@ -45,8 +45,7 @@ class ActiveShapeModel(object):
         level = MultiResolution.levelCount - 1
         while level >= 0:
             diff = level - self.currentLevel
-            if diff != 0:
-                self.currentLevel = level
+            self.currentLevel = level
             if diff < 0:
                 for i in range(0, abs(diff)):
                     self.currentTooth.upSample()
@@ -64,5 +63,5 @@ class ActiveShapeModel(object):
                 steps -= 1
             level -= 1
         res = deepcopy(self.currentTooth)
-#        res.translate((self.multiResolution.left, self.multiResolution.top))
+        res.translate((self.multiResolution.left, self.multiResolution.top))
         return res
