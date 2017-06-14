@@ -118,15 +118,15 @@ def findInitialTeeth(radiograph):
     lowerLines = filterLines(lowerLines, lowerJaw.shape, 6, 90)
 
     rho,theta = zip(*upperLines)
-    pos = [np.array((left+rho[0]-35+sideSize,top+110+upperJawLine-upperJawSize))]
+    pos = [np.array((left+rho[0]-35+sideSize,top+50+upperJawLine-upperJawSize))]
     for i in range(1,3):
-        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+130+upperJawLine-upperJawSize)))
-    pos.append(np.array((left+rho[2]+25+sideSize,top+110+upperJawLine-upperJawSize)))
+        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+80+upperJawLine-upperJawSize)))
+    pos.append(np.array((left+rho[2]+25+sideSize,top+80+upperJawLine-upperJawSize)))
     rho,theta = zip(*lowerLines)
     pos.append(np.array((left+rho[0]-40+sideSize,top+50+lowerJawLine)))
     for i in range(1,3):
-        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+50+lowerJawLine)))
-    pos.append(np.array((left+rho[2]+40+sideSize,top+50+lowerJawLine)))
+        pos.append(np.array((left+rho[i-1]+(rho[i]-rho[i-1])/2+sideSize,top+90+lowerJawLine)))
+    pos.append(np.array((left+rho[2]+sideSize,top+90+lowerJawLine)))
 
     return zip(pos,
             (48, 55, 55, 48, 40, 38, 38, 40),
