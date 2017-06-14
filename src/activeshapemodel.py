@@ -66,6 +66,5 @@ class ActiveShapeModel(object):
         res = deepcopy(self.currentTooth)
         res.upSample()
         res.upSample()
-        res.align(self.newTooth)
 #        res.translate((self.multiResolution.left, self.multiResolution.top))
         return res
